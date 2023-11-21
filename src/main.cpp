@@ -41,7 +41,12 @@ struct Brush
     int spread;
 };
 
-void CleanParticles(std::vector<Particle> &particles)
+void ClearAllParticles(std::vector<Particle> &particles)
+{
+    particles.erase(std::remove_if(begin(particles), end(particles), [](Particle p){return true;}), end(particles));
+}
+
+void ClearInvisibleParticles(std::vector<Particle> &particles)
 {
     particles.erase(std::remove_if(begin(particles), end(particles), 
     [](Particle p) 
@@ -84,7 +89,7 @@ void UpdateParticleState(Particle &p) {
 
 void UpdateParticles(std::vector<Particle> &particles) 
 {
-    CleanParticles(particles);
+    ClearInvisibleParticles(particles);
     for (auto &p : particles) 
     {
         UpdateParticleState(p);
@@ -185,6 +190,9 @@ int main()
                 break;
             case KEY_F:
                 currentBrush = &fireBrush;
+                break;
+            case KEY_Z:
+                ClearAllParticles(particles);
                 break;
             // TODO: fix window not resizing properly
             case KEY_F11:
