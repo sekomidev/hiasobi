@@ -8,4 +8,4 @@ _bin
 premake5
 premake5.*
 premake-*
-raylib_premake5.lua
+!premake5.lua
