@@ -1,45 +1,18 @@
-#include "raylib.h"
-#include "rand-utils.h"
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <iostream>
 #include <vector>
 
+#include "raylib.h"
+#include "rand-utils.h"
+#include "file-saveload.h"
+#include "structures/Brush.h"
+#include "structures/Particle.h"
 
 int         A_TARGET_FPS = 60;
-const int   W_MAX_PARTICLES = 1'000'000;
+const int   W_MAX_PARTICLES = 100'000;
 const int   W_MAX_OUT_OF_BOUNDS_OFFSET = 2'000'000'000;
-
-struct ParticleType
-{
-    Vector2 minInertia;
-    Vector2 maxInertia;
-    Vector2 minInertiaAdd;
-    Vector2 maxInertiaAdd;
-    Vector2 minRandMove;
-    Vector2 maxRandMove;
-    Color color;
-    float intensityDecay;
-    float size;
-};
-
-struct Particle
-{
-    ParticleType *type;
-    Vector2 pos;
-    Vector2 inertia;
-    Color color;
-    float intensity;
-    float size;
-};
-
-struct Brush
-{
-    ParticleType &particleType;
-    int amount;
-    int spread;
-};
 
 void ClearAllParticles(std::vector<Particle> &particles)
 {
@@ -172,8 +145,8 @@ int main()
     Brush waterBrush =
     {
         .particleType = water,
-        .amount = 160,
-        .spread = 1080
+        .amount = 16,
+        .spread = 32
     };
     Brush *currentBrush = &fireBrush;
 
