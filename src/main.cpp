@@ -1,5 +1,5 @@
 #include "raylib.h"
-#include "rand.h"
+#include "rand-utils.h"
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -119,7 +119,7 @@ void AddParticlesAtMousePos(std::vector<Particle> &particles, ParticleType *type
     AddParticlesAtPos(particles, type, mousePos, amount, spread);
 }
 
-void DrawDebugInfo(std::vector<Particle> &particles)
+void DrawDebugInfo(const std::vector<Particle> &particles)
 {
     DrawFPS(1200, 20);
     DrawText(std::to_string(particles.size()).c_str(), 1200, 40, 24, GRAY);
@@ -166,14 +166,14 @@ int main()
     Brush fireBrush =
     {
         .particleType = fire,
-        .amount = 160,
+        .amount = 16,
         .spread = 16
     };
     Brush waterBrush =
     {
         .particleType = water,
-        .amount = 16,
-        .spread = 32
+        .amount = 160,
+        .spread = 1080
     };
     Brush *currentBrush = &fireBrush;
 
