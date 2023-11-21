@@ -114,7 +114,6 @@ void AddParticlesAtMousePos(std::vector<Particle> &particles, ParticleType *type
     AddParticlesAtPos(particles, type, mousePos, amount, spread);
 }
 
-
 void DrawDebugInfo(std::vector<Particle> &particles)
 {
     DrawFPS(1200, 20);
@@ -144,7 +143,7 @@ int main()
         .minRandMove = {-2, -0.8},
         .maxRandMove = {2, 2},
         .color = RED,
-        .intensityDecay = 0,
+        .intensityDecay = 1.5,
         .size = 4
     };
     ParticleType water
@@ -198,13 +197,13 @@ int main()
                 break;
             }
             case KEY_C:
-                fire.color = RandColorRgb(0, 0, 0, 255, 255, 255);
+                currentBrush->particleType.color = RandColorRgb(0, 0, 0, 255, 255, 255);
                 break;
             case KEY_MINUS:
-                fire.size -= 1;
+                currentBrush->particleType.size -= 1;
                 break;
             case KEY_EQUAL:
-                fire.size += 1;
+                currentBrush->particleType.size += 1;
                 break;
         }
 
