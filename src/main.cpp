@@ -1,15 +1,15 @@
 #include "raylib.h"
 #include "rand.h"
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <iostream>
 #include <vector>
 
-// TODO: try to use a linked list to store the particles
 
 int         A_TARGET_FPS = 60;
-const int   W_MAX_PARTICLES = 100'000;
-const int   W_MAX_OUT_OF_BOUNDS_OFFSET = 100;
+const int   W_MAX_PARTICLES = 1'000'000;
+const int   W_MAX_OUT_OF_BOUNDS_OFFSET = 2'000'000'000;
 
 struct ParticleType
 {
@@ -36,108 +36,99 @@ struct Particle
 
 struct Brush
 {
-    ParticleType *particleType;
+    ParticleType &particleType;
     int amount;
     int spread;
 };
 
 void CleanParticles(std::vector<Particle> &particles)
 {
-    for (int i = 0; i < particles.size(); i++) 
-    {
-        if (particles[i].pos.y < -W_MAX_OUT_OF_BOUNDS_OFFSET 
-         || particles[i].pos.y >  GetScreenHeight() + W_MAX_OUT_OF_BOUNDS_OFFSET 
-         || particles[i].pos.x < -W_MAX_OUT_OF_BOUNDS_OFFSET
-         || particles[i].pos.x >  GetScreenWidth() + W_MAX_OUT_OF_BOUNDS_OFFSET
-         || particles[i].intensity < 0) 
-        {
-            particles.erase(particles.begin() + i);
-        }
-    }
+    particles.erase(std::remove_if(begin(particles), end(particles), 
+    [](Particle p) 
+    { 
+        return p.pos.y < -W_MAX_OUT_OF_BOUNDS_OFFSET 
+         || p.pos.y >  GetScreenHeight() + W_MAX_OUT_OF_BOUNDS_OFFSET 
+         || p.pos.x < -W_MAX_OUT_OF_BOUNDS_OFFSET
+         || p.pos.x >  GetScreenWidth() + W_MAX_OUT_OF_BOUNDS_OFFSET
+         || p.intensity < 0;
+    }), 
+    end(particles));
 }
 
-void UpdateParticlePosition(std::vector<Particle> &particles, const int &i) 
+void UpdateParticlePosition(Particle &p) 
 {
-    auto p = &particles[i];
-    particles[i].pos.x += (particles[i].inertia.x + RandFloat(p->type->minRandMove.x, p->type->maxRandMove.x)) * GetFrameTime() * 100;
-    particles[i].pos.y -= (particles[i].inertia.y + RandFloat(p->type->minRandMove.y, p->type->maxRandMove.y)) * GetFrameTime() * 100;
+    p.pos.x += (p.inertia.x + RandFloat(p.type->minRandMove.x, p.type->maxRandMove.x)) * GetFrameTime() * 100;
+    p.pos.y -= (p.inertia.y + RandFloat(p.type->minRandMove.y, p.type->maxRandMove.y)) * GetFrameTime() * 100;
 }
 
-void UpdateParticleState(std::vector<Particle> &particles, const int &i) {
-    auto p = &particles[i];
-    particles[i].intensity -= p->type->intensityDecay;
-    particles[i].color.a = 50 + particles[i].intensity * 2;
+void UpdateParticleState(Particle &p) {
+    p.intensity -= p.type->intensityDecay;
+    p.color.a = 50 + p.intensity * 2;
 
-    auto inertDeltaX = RandFloat(p->type->minInertiaAdd.x, p->type->maxInertiaAdd.x);
-    if (particles[i].inertia.x + inertDeltaX > p->type->minInertia.x
-     && particles[i].inertia.x + inertDeltaX < p->type->maxInertia.x ) 
+    auto inertDeltaX = RandFloat(p.type->minInertiaAdd.x, p.type->maxInertiaAdd.x);
+    if (p.inertia.x + inertDeltaX > p.type->minInertia.x
+     && p.inertia.x + inertDeltaX < p.type->maxInertia.x ) 
     {
-        particles[i].inertia.x += inertDeltaX;
+        p.inertia.x += inertDeltaX;
     }
 
-    auto inertDeltaY = RandFloat(p->type->minInertiaAdd.y, p->type->maxInertiaAdd.y);
-     if (particles[i].inertia.y + inertDeltaY > p->type->minInertia.y
-     && particles[i].inertia.y + inertDeltaY < p->type->maxInertia.y) 
+    auto inertDeltaY = RandFloat(p.type->minInertiaAdd.y, p.type->maxInertiaAdd.y);
+     if (p.inertia.y + inertDeltaY > p.type->minInertia.y
+     && p.inertia.y + inertDeltaY < p.type->maxInertia.y) 
     {
-        particles[i].inertia.y += inertDeltaY;
+        p.inertia.y += inertDeltaY;
     }
 
-    UpdateParticlePosition(particles, i);
+    UpdateParticlePosition(p);
 }
 
 void UpdateParticles(std::vector<Particle> &particles) 
 {
     CleanParticles(particles);
-
-    for (int i = 0; i < particles.size(); i++) 
+    for (auto &p : particles) 
     {
-        UpdateParticleState(particles, i);
+        UpdateParticleState(p);
     }
 }
 
 void DrawParticles(const std::vector<Particle> &particles)
 {
-    for (int i = 0; i < particles.size(); i++) 
+    for (const auto &p : particles) 
     {
-        auto p = &particles[i];
-        DrawRectangle(p->pos.x, p->pos.y, p->size, p->size, p->color);
+        DrawRectangle(p.pos.x, p.pos.y, p.size, p.size, p.color);
     }
 }
 
-void AddParticlesAtPos(std::vector<Particle> &particles, ParticleType &type, const Vector2 pos, const int amount, const int spread)
+void AddParticlesAtPos(std::vector<Particle> &particles, ParticleType *type, const Vector2 pos, const int amount, const int spread)
 {
-    if (particles.size() > W_MAX_PARTICLES) 
-    {
-        return;
-    }
-    
     for (int i = 0; i < amount; i++) 
     {
         Vector2 randOffset = RandPointInCircle(spread);
-        particles.push_back({&type, {pos.x + randOffset.x, pos.y + randOffset.y}, {0, 0}, type.color, 100, type.size});
+        particles.push_back({type, {pos.x + randOffset.x, pos.y + randOffset.y}, {0, 0}, type->color, 100, type->size});
     }
 }
 
-void AddParticlesAtMousePos(std::vector<Particle> &particles, ParticleType &type, const int amount, const int spread)
+void AddParticlesAtMousePos(std::vector<Particle> &particles, ParticleType *type, const int amount, const int spread)
 {
     Vector2 mousePos = GetMousePosition();
     AddParticlesAtPos(particles, type, mousePos, amount, spread);
 }
 
-void AppInit()
-{
-	InitWindow(1280, 800, "hiasobi (camellia reference!!!)");
-    SetWindowIcon(LoadImage("resources/common/icon.png"));
-    SetWindowState(FLAG_WINDOW_RESIZABLE);
-    SetTargetFPS(A_TARGET_FPS);
-    SetTraceLogLevel(LOG_DEBUG);
-	SetExitKey(KEY_ESCAPE);
-}
 
 void DrawDebugInfo(std::vector<Particle> &particles)
 {
     DrawFPS(1200, 20);
     DrawText(std::to_string(particles.size()).c_str(), 1200, 40, 24, GRAY);
+    /// DrawText(std::to_string(particleCount).c_str(), 1200, 40, 24, GRAY);
+}
+
+void AppInit()
+{
+	InitWindow(1280, 800, "hiasobi (camellia reference!!!)");
+    SetWindowState(FLAG_WINDOW_RESIZABLE);
+    SetTargetFPS(A_TARGET_FPS);
+    SetTraceLogLevel(LOG_DEBUG);
+	SetExitKey(KEY_ESCAPE);
 }
 
 int main() 
@@ -153,7 +144,7 @@ int main()
         .minRandMove = {-2, -0.8},
         .maxRandMove = {2, 2},
         .color = RED,
-        .intensityDecay = 1.5,
+        .intensityDecay = 0,
         .size = 4
     };
     ParticleType water
@@ -170,17 +161,17 @@ int main()
     };
     Brush fireBrush =
     {
-        .particleType = &fire,
-        .amount = 5,
+        .particleType = fire,
+        .amount = 160,
         .spread = 16
     };
     Brush waterBrush =
     {
-        .particleType = &water,
+        .particleType = water,
         .amount = 16,
         .spread = 32
     };
-    Brush currentBrush = fireBrush;
+    Brush *currentBrush = &fireBrush;
 
 	// game loop
 	while (!WindowShouldClose()) 
@@ -191,10 +182,10 @@ int main()
         switch (GetKeyPressed()) 
         {
             case KEY_W:
-                currentBrush = waterBrush;
+                currentBrush = &waterBrush;
                 break;
             case KEY_F:
-                currentBrush = fireBrush;
+                currentBrush = &fireBrush;
                 break;
             // TODO: fix window not resizing properly
             case KEY_F11:
@@ -219,7 +210,7 @@ int main()
 
         if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsKeyPressed(KEY_X)) 
         {
-            AddParticlesAtMousePos(particles, *currentBrush.particleType, currentBrush.amount, currentBrush.spread);
+            AddParticlesAtMousePos(particles, &currentBrush->particleType, currentBrush->amount, currentBrush->spread);
         }
 
         BeginDrawing();
