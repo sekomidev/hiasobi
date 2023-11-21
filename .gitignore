@@ -1,0 +1,11 @@
+raylib-master
+sandbox
+_build
+_bin
+.vs
+.vscode
+
+premake5
+premake5.*
+premake-*
+raylib_premake5.lua
