@@ -194,16 +194,6 @@ int main()
             case KEY_Z:
                 ClearAllParticles(particles);
                 break;
-            // TODO: fix window not resizing properly
-            case KEY_F11:
-            {
-                int display = GetCurrentMonitor();
-                std::cout << display << " " << GetMonitorWidth(display) << std::endl;
-                ToggleFullscreen();
-                
-                SetWindowSize(GetMonitorWidth(display), GetMonitorHeight(display));
-                break;
-            }
             case KEY_C:
                 currentBrush->particleType.color = RandColorRgb(0, 0, 0, 255, 255, 255);
                 break;
