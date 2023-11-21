@@ -1,6 +1,8 @@
 #pragma once
 #include "raylib.h"
 
+/* functions for generating various random data */
+
 int RandInt(int min, int max);
 float RandFloat(float min, float max);
 Vector2 RandPointInCircle(float r);
