@@ -82,7 +82,7 @@ void AddParticlesAtPos(std::vector<Particle> &particles, ParticleType *type, con
     for (int i = 0; i < amount; i++) 
     {
         Vector2 randOffset = RandPointInCircle(spread);
-        particles.push_back({type, {pos.x + randOffset.x, pos.y + randOffset.y}, {0, 0}, type->color, 100, type->size});
+        particles.push_back({type, {pos.x + randOffset.x, pos.y + randOffset.y}, {0, 0}, type->color, type->startLife, type->size});
     }
 }
 
