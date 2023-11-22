@@ -28,7 +28,7 @@ void ClearInvisibleParticles(std::vector<Particle> &particles)
          || p.pos.y >  GetScreenHeight() + W_MAX_OUT_OF_BOUNDS_OFFSET 
          || p.pos.x < -W_MAX_OUT_OF_BOUNDS_OFFSET
          || p.pos.x >  GetScreenWidth() + W_MAX_OUT_OF_BOUNDS_OFFSET
-         || p.intensity < 0;
+         || p.life < 0;
     }), 
     end(particles));
 }
@@ -40,8 +40,8 @@ void UpdateParticlePosition(Particle &p)
 }
 
 void UpdateParticleState(Particle &p) {
-    p.intensity -= p.type->intensityDecay;
-    p.color.a = 50 + p.intensity * 2;
+    p.life -= p.type->lifeDecay;
+    p.color.a = p.type->colorAlphaAdd + p.life * p.type->lifeAlphaMultiplier;
 
     auto inertDeltaX = RandFloat(p.type->minInertiaAdd.x, p.type->maxInertiaAdd.x);
     if (p.inertia.x + inertDeltaX > p.type->minInertia.x
@@ -120,8 +120,8 @@ int main()
         .minRandMove = {-2, -0.8},
         .maxRandMove = {2, 2},
         .color = RED,
-        .intensityDecay = 1.5,
-        .size = 4
+        .size = 4,
+        .lifeDecay = 1.5
     };
     ParticleType water
     {
@@ -132,8 +132,8 @@ int main()
         .minRandMove = {-0.5, 0},
         .maxRandMove = {0.5, 0},
         .color = BLUE,
-        .intensityDecay = 0.5,
-        .size = 4
+        .size = 4,
+        .lifeDecay = 0.5
     };
     Brush fireBrush =
     {
