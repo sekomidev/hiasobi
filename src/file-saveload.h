@@ -1,6 +1,6 @@
 #pragma once
 #include "raylib.h"
-#include "structures/Brush.h"
+#include "structs/Brush.h"
 
 /* exactly what it says - contains functions for saving / loading things from and to files */
 

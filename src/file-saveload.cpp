@@ -1,6 +1,6 @@
 #include "raylib.h"
-#include "structures/Brush.h"
-#include "structures/ParticleType.h"
+#include "structs/Brush.h"
+#include "structs/ParticleType.h"
 #include <fstream>
 #include <iostream>
 

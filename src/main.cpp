@@ -7,8 +7,8 @@
 #include "raylib.h"
 #include "rand-utils.h"
 #include "file-saveload.h"
-#include "structures/Brush.h"
-#include "structures/Particle.h"
+#include "structs/Brush.h"
+#include "structs/Particle.h"
 
 int         A_TARGET_FPS = 60;
 const int   W_MAX_PARTICLES = 100'000;
