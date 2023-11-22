@@ -16,7 +16,7 @@ const int   W_MAX_OUT_OF_BOUNDS_OFFSET = 2'000'000'000;
 
 void ClearAllParticles(std::vector<Particle> &particles)
 {
-    particles.erase(std::remove_if(begin(particles), end(particles), [](Particle p){return true;}), end(particles));
+    particles.clear();
 }
 
 void ClearInvisibleParticles(std::vector<Particle> &particles)
@@ -96,7 +96,6 @@ void DrawDebugInfo(const std::vector<Particle> &particles)
 {
     DrawFPS(1200, 20);
     DrawText(std::to_string(particles.size()).c_str(), 1200, 40, 24, GRAY);
-    /// DrawText(std::to_string(particleCount).c_str(), 1200, 40, 24, GRAY);
 }
 
 void AppInit()
