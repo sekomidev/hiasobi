@@ -92,6 +92,39 @@ void AddParticlesAtMousePos(std::vector<Particle> &particles, ParticleType *type
     AddParticlesAtPos(particles, type, mousePos, amount, spread);
 }
 
+void HandleKeyboardInput(std::vector<Particle> &particles,
+std::vector<Particle> &savedParticles, Brush &fireBrush,
+Brush &waterBrush, Brush *&currentBrush) 
+{
+    switch (GetKeyPressed()) 
+    {
+        case KEY_W:
+            currentBrush = &waterBrush;
+            break;
+        case KEY_F:
+            currentBrush = &fireBrush;
+            break;
+        case KEY_Z:
+            ClearAllParticles(particles);
+            break;
+        case KEY_C:
+            currentBrush->particleType.color = RandColorRgb(0, 0, 0, 255, 255, 255);
+            break;
+        case KEY_S:
+            savedParticles = particles;
+            break;
+        case KEY_L:
+            particles = savedParticles;
+            break;
+        case KEY_MINUS:
+            currentBrush->particleType.size -= 1;
+            break;
+        case KEY_EQUAL:
+            currentBrush->particleType.size += 1;
+            break;
+    }
+}
+
 void DrawDebugInfo(const std::vector<Particle> &particles)
 {
     DrawFPS(1200, 20);
@@ -107,79 +140,42 @@ void AppInit()
 	SetExitKey(KEY_ESCAPE);
 }
 
-int main() 
-{
-    AppInit();
-    std::vector<Particle> particles;
-    ParticleType fire
-    {
-        .minInertia = {-1, -1},
-        .maxInertia = {1, 2.5},
-        .minInertiaAdd = {-0.2, -0.1},
-        .maxInertiaAdd = {0.2, 0.15},
-        .minRandMove = {-2, -0.8},
-        .maxRandMove = {2, 2},
-        .color = RED,
-        .size = 4,
-        .lifeDecay = 1.5
-    };
-    ParticleType water
-    {
-        .minInertia = {-1, -4},
-        .maxInertia = {1, 0},
-        .minInertiaAdd = {-0.5, -2},
-        .maxInertiaAdd = {0.5, -1},
-        .minRandMove = {-0.5, 0},
-        .maxRandMove = {0.5, 0},
-        .color = BLUE,
-        .size = 4,
-        .lifeDecay = 0.5
-    };
-    Brush fireBrush =
-    {
-        .particleType = fire,
-        .amount = 16,
-        .spread = 16
-    };
-    Brush waterBrush =
-    {
-        .particleType = water,
-        .amount = 16,
-        .spread = 32
-    };
-    Brush *currentBrush = &fireBrush;
+int main() {
+        AppInit();
+        std::vector<Particle> particles;
+        std::vector<Particle> savedParticles;
+        ParticleType fire{.minInertia = {-1, -1},
+                          .maxInertia = {1, 2.5},
+                          .minInertiaAdd = {-0.2, -0.1},
+                          .maxInertiaAdd = {0.2, 0.15},
+                          .minRandMove = {-2, -0.8},
+                          .maxRandMove = {2, 2},
+                          .color = RED,
+                          .size = 4,
+                          .lifeDecay = 1.5};
+        ParticleType water{.minInertia = {-1, -4},
+                           .maxInertia = {1, 0},
+                           .minInertiaAdd = {-0.5, -2},
+                           .maxInertiaAdd = {0.5, -1},
+                           .minRandMove = {-0.5, 0},
+                           .maxRandMove = {0.5, 0},
+                           .color = BLUE,
+                           .size = 4,
+                           .lifeDecay = 0.5};
+        Brush fireBrush = {.particleType = fire, .amount = 16, .spread = 16};
+        Brush waterBrush = {.particleType = water, .amount = 160, .spread = 32};
+        Brush *currentBrush = &waterBrush;
 
 	// game loop
 	while (!WindowShouldClose()) 
 	{
         UpdateParticles(particles);
-
-        // TODO: get all of this inside some function
-        switch (GetKeyPressed()) 
-        {
-            case KEY_W:
-                currentBrush = &waterBrush;
-                break;
-            case KEY_F:
-                currentBrush = &fireBrush;
-                break;
-            case KEY_Z:
-                ClearAllParticles(particles);
-                break;
-            case KEY_C:
-                currentBrush->particleType.color = RandColorRgb(0, 0, 0, 255, 255, 255);
-                break;
-            case KEY_MINUS:
-                currentBrush->particleType.size -= 1;
-                break;
-            case KEY_EQUAL:
-                currentBrush->particleType.size += 1;
-                break;
-        }
+        HandleKeyboardInput(particles, savedParticles, fireBrush, waterBrush, currentBrush);
 
         if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsKeyPressed(KEY_X)) 
         {
-            AddParticlesAtMousePos(particles, &currentBrush->particleType, currentBrush->amount, currentBrush->spread);
+            AddParticlesAtMousePos(particles, &currentBrush->particleType, 
+            currentBrush->amount, currentBrush->spread);
         }
 
         BeginDrawing();
