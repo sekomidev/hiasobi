@@ -1,0 +1,13 @@
+---
+BasedOnStyle: LLVM
+IndentWidth: 4
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: true  
+  AfterFunction: true
+  SplitEmptyFunction: true
+---
+Language: Cpp
+DerivePointerAlignment: false
+PointerAlignment: Right
+...
