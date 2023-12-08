@@ -1,11 +1,8 @@
 ---
 BasedOnStyle: LLVM
 IndentWidth: 4
-BreakBeforeBraces: Custom
-BraceWrapping:
-  AfterClass: true  
-  AfterFunction: true
-  SplitEmptyFunction: true
+ColumnLimit: 120
+BreakBeforeBraces: Stroustrup
 ---
 Language: Cpp
 DerivePointerAlignment: false

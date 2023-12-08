@@ -40,28 +40,20 @@ void ClearAllParticles(std::vector<Particle> &particles) { particles.clear(); }
 
 void ClearInvisibleParticles(std::vector<Particle> &particles)
 {
-    particles.erase(
-        std::remove_if(begin(particles), end(particles),
-                       [](Particle p) {
-                           return p.pos.y < -W_MAX_OUT_OF_BOUNDS_OFFSET ||
-                                  p.pos.y > GetScreenHeight() +
-                                                W_MAX_OUT_OF_BOUNDS_OFFSET ||
-                                  p.pos.x < -W_MAX_OUT_OF_BOUNDS_OFFSET ||
-                                  p.pos.x > GetScreenWidth() +
-                                                W_MAX_OUT_OF_BOUNDS_OFFSET ||
-                                  p.life < 0;
-                       }),
-        end(particles));
+    particles.erase(std::remove_if(begin(particles), end(particles),
+                                   [](Particle p) {
+                                       return p.pos.y < -W_MAX_OUT_OF_BOUNDS_OFFSET ||
+                                              p.pos.y > GetScreenHeight() + W_MAX_OUT_OF_BOUNDS_OFFSET ||
+                                              p.pos.x < -W_MAX_OUT_OF_BOUNDS_OFFSET ||
+                                              p.pos.x > GetScreenWidth() + W_MAX_OUT_OF_BOUNDS_OFFSET || p.life < 0;
+                                   }),
+                    end(particles));
 }
 
 void UpdateParticlePosition(Particle &p)
 {
-    p.pos.x += (p.inertia.x +
-                RandFloat(p.type->minRandMove.x, p.type->maxRandMove.x)) *
-               GetFrameTime() * 100;
-    p.pos.y -= (p.inertia.y +
-                RandFloat(p.type->minRandMove.y, p.type->maxRandMove.y)) *
-               GetFrameTime() * 100;
+    p.pos.x += (p.inertia.x + RandFloat(p.type->minRandMove.x, p.type->maxRandMove.x)) * GetFrameTime() * 100;
+    p.pos.y -= (p.inertia.y + RandFloat(p.type->minRandMove.y, p.type->maxRandMove.y)) * GetFrameTime() * 100;
 }
 
 void UpdateParticleState(Particle &p)
@@ -69,17 +61,13 @@ void UpdateParticleState(Particle &p)
     p.life -= p.type->lifeDecay;
     p.color.a = p.type->colorAlphaAdd + p.life * p.type->lifeAlphaMultiplier;
 
-    auto inertDeltaX =
-        RandFloat(p.type->minInertiaAdd.x, p.type->maxInertiaAdd.x);
-    if (p.inertia.x + inertDeltaX > p.type->minInertia.x &&
-        p.inertia.x + inertDeltaX < p.type->maxInertia.x) {
+    auto inertDeltaX = RandFloat(p.type->minInertiaAdd.x, p.type->maxInertiaAdd.x);
+    if (p.inertia.x + inertDeltaX > p.type->minInertia.x && p.inertia.x + inertDeltaX < p.type->maxInertia.x) {
         p.inertia.x += inertDeltaX;
     }
 
-    auto inertDeltaY =
-        RandFloat(p.type->minInertiaAdd.y, p.type->maxInertiaAdd.y);
-    if (p.inertia.y + inertDeltaY > p.type->minInertia.y &&
-        p.inertia.y + inertDeltaY < p.type->maxInertia.y) {
+    auto inertDeltaY = RandFloat(p.type->minInertiaAdd.y, p.type->maxInertiaAdd.y);
+    if (p.inertia.y + inertDeltaY > p.type->minInertia.y && p.inertia.y + inertDeltaY < p.type->maxInertia.y) {
         p.inertia.y += inertDeltaY;
     }
 
@@ -101,32 +89,24 @@ void DrawParticles(const std::vector<Particle> &particles)
     }
 }
 
-void AddParticlesAtPos(std::vector<Particle> &particles, ParticleType *type,
-                       const Vector2 pos, const int amount, const int spread)
+void AddParticlesAtPos(std::vector<Particle> &particles, ParticleType *type, const Vector2 pos, const int amount,
+                       const int spread)
 {
     for (int i = 0; i < amount; i++) {
         Vector2 randOffset = RandPointInCircle(spread);
-        particles.push_back({type,
-                             {pos.x + randOffset.x, pos.y + randOffset.y},
-                             {0, 0},
-                             type->color,
-                             type->startLife,
-                             type->size});
+        particles.push_back(
+            {type, {pos.x + randOffset.x, pos.y + randOffset.y}, {0, 0}, type->color, type->startLife, type->size});
     }
 }
 
-void AddParticlesAtMousePos(std::vector<Particle> &particles,
-                            ParticleType *type, const int amount,
-                            const int spread)
+void AddParticlesAtMousePos(std::vector<Particle> &particles, ParticleType *type, const int amount, const int spread)
 {
     Vector2 mousePos = GetMousePosition();
     AddParticlesAtPos(particles, type, mousePos, amount, spread);
 }
 
-void HandleKeyboardInput(std::vector<Particle> &particles,
-                         std::vector<Particle> &savedParticles,
-                         Brush &fireBrush, Brush &waterBrush,
-                         Brush *&currentBrush)
+void HandleKeyboardInput(std::vector<Particle> &particles, std::vector<Particle> &savedParticles, Brush &fireBrush,
+                         Brush &waterBrush, Brush *&currentBrush)
 {
     switch (GetKeyPressed()) {
     case KEY_W:
@@ -182,23 +162,16 @@ void StartMenu()
 
         BeginDrawing();
         ClearBackground(BLACK);
-        AddParticlesAtPos(particles, &fire,
-                          {(float)GetScreenWidth() / 2 - 300,
-                           (float)GetScreenHeight() / 2 + 100},
-                          16, 32);
-        AddParticlesAtPos(particles, &fire,
-                          {(float)GetScreenWidth() / 2 + 300,
-                           (float)GetScreenHeight() / 2 + 100},
-                          16, 32);
+        AddParticlesAtPos(particles, &fire, {(float)GetScreenWidth() / 2 - 300, (float)GetScreenHeight() / 2 + 100}, 16,
+                          32);
+        AddParticlesAtPos(particles, &fire, {(float)GetScreenWidth() / 2 + 300, (float)GetScreenHeight() / 2 + 100}, 16,
+                          32);
         UpdateParticles(particles);
         DrawParticles(particles);
-        DrawText("hiasobi", GetScreenWidth() / 2 - 110,
-                 GetScreenHeight() / 2 - 180, 64, RED);
-        DrawText(" it took me like 5 minutes\n\nto come up with the name",
-                 GetScreenWidth() / 2 - 150, GetScreenHeight() / 2 - 100, 24,
-                 RED);
-        DrawText("press enter to play", GetScreenWidth() / 2 - 140,
-                 GetScreenHeight() / 2 + 100, 28, GRAY);
+        DrawText("hiasobi", GetScreenWidth() / 2 - 110, GetScreenHeight() / 2 - 180, 64, RED);
+        DrawText(" it took me like 5 minutes\n\nto come up with the name", GetScreenWidth() / 2 - 150,
+                 GetScreenHeight() / 2 - 100, 24, RED);
+        DrawText("press enter to play", GetScreenWidth() / 2 - 140, GetScreenHeight() / 2 + 100, 28, GRAY);
         EndDrawing();
     }
 }
@@ -215,12 +188,10 @@ int main()
     // game loop
     while (!WindowShouldClose()) {
         UpdateParticles(particles);
-        HandleKeyboardInput(particles, savedParticles, fireBrush, waterBrush,
-                            currentBrush);
+        HandleKeyboardInput(particles, savedParticles, fireBrush, waterBrush, currentBrush);
 
         if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsKeyPressed(KEY_X)) {
-            AddParticlesAtMousePos(particles, &currentBrush->particleType,
-                                   currentBrush->amount, currentBrush->spread);
+            AddParticlesAtMousePos(particles, &currentBrush->particleType, currentBrush->amount, currentBrush->spread);
         }
 
         BeginDrawing();
