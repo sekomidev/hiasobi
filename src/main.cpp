@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <cmath>
 #include <cstdint>
 #include <iostream>
 #include <vector>
@@ -11,8 +10,8 @@
 #include "structs/Particle.h"
 
 int         A_TARGET_FPS = 60;
-const int   W_MAX_PARTICLES = 100'000;
-const int   W_MAX_OUT_OF_BOUNDS_OFFSET = 2'000'000'000;
+const int   W_MAX_PARTICLES = 200'000;
+const int   W_MAX_OUT_OF_BOUNDS_OFFSET = 1000;
 
 void ClearAllParticles(std::vector<Particle> &particles)
 {
@@ -163,8 +162,8 @@ int main() {
                            .size = 4,
                            .lifeDecay = 0.5};
         Brush fireBrush = {.particleType = fire, .amount = 16, .spread = 16};
-        Brush waterBrush = {.particleType = water, .amount = 160, .spread = 32};
-        Brush *currentBrush = &waterBrush;
+        Brush waterBrush = {.particleType = water, .amount = 32, .spread = 32};
+        Brush *currentBrush = &fireBrush;
 
 	// game loop
 	while (!WindowShouldClose()) 
@@ -186,5 +185,4 @@ int main() {
 	}
 
 	CloseWindow();
-	return 0;
 }
