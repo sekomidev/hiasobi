@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cstdint>
+#include <cstdlib>
 #include <iostream>
 #include <vector>
 
@@ -12,6 +13,28 @@
 int         A_TARGET_FPS = 60;
 const int   W_MAX_PARTICLES = 200'000;
 const int   W_MAX_OUT_OF_BOUNDS_OFFSET = 1000;
+
+std::vector<Particle> particles;
+
+ParticleType fire{.minInertia = {-1, -1},
+                  .maxInertia = {1, 2.5},
+                  .minInertiaAdd = {-0.2, -0.1},
+                  .maxInertiaAdd = {0.2, 0.15},
+                  .minRandMove = {-2, -0.8},
+                  .maxRandMove = {2, 2},
+                  .color = RED,
+                  .size = 4,
+                  .lifeDecay = 1.5};
+
+ParticleType water{.minInertia = {-1, -4},
+                   .maxInertia = {1, 0},
+                   .minInertiaAdd = {-0.5, -2},
+                   .maxInertiaAdd = {0.5, -1},
+                   .minRandMove = {-0.5, 0},
+                   .maxRandMove = {0.5, 0},
+                   .color = BLUE,
+                   .size = 4,
+                   .lifeDecay = 0.5};
 
 void ClearAllParticles(std::vector<Particle> &particles)
 {
@@ -139,32 +162,38 @@ void AppInit()
 	SetExitKey(KEY_ESCAPE);
 }
 
+// TODO: this function is a giant mess
+void StartMenu()
+{
+    while (!IsKeyPressed(KEY_ENTER)) 
+    {
+        if (WindowShouldClose()) 
+        {
+            CloseWindow();
+            exit(0);
+        }
+
+        BeginDrawing();
+        ClearBackground(BLACK);
+        AddParticlesAtPos(particles, &fire, {(float)GetScreenWidth() / 2 - 300, (float)GetScreenHeight() / 2 + 100}, 16, 32);
+        AddParticlesAtPos(particles, &fire, {(float)GetScreenWidth() / 2 + 300, (float)GetScreenHeight() / 2 + 100}, 16, 32);
+        UpdateParticles(particles);
+        DrawParticles(particles);
+        DrawText("hiasobi", GetScreenWidth() / 2 - 110, GetScreenHeight() / 2 - 180, 64, RED);
+        DrawText(" it took me like 5 minutes\n\nto come up with the name", GetScreenWidth() / 2 - 150, GetScreenHeight() / 2 - 100, 24, RED);
+        DrawText("press enter to play", GetScreenWidth() / 2 - 140, GetScreenHeight() / 2 + 100, 28, GRAY);
+        EndDrawing();
+    }
+}
+
 int main() {
         AppInit();
-        std::vector<Particle> particles;
         std::vector<Particle> savedParticles;
-        ParticleType fire{.minInertia = {-1, -1},
-                          .maxInertia = {1, 2.5},
-                          .minInertiaAdd = {-0.2, -0.1},
-                          .maxInertiaAdd = {0.2, 0.15},
-                          .minRandMove = {-2, -0.8},
-                          .maxRandMove = {2, 2},
-                          .color = RED,
-                          .size = 4,
-                          .lifeDecay = 1.5};
-        ParticleType water{.minInertia = {-1, -4},
-                           .maxInertia = {1, 0},
-                           .minInertiaAdd = {-0.5, -2},
-                           .maxInertiaAdd = {0.5, -1},
-                           .minRandMove = {-0.5, 0},
-                           .maxRandMove = {0.5, 0},
-                           .color = BLUE,
-                           .size = 4,
-                           .lifeDecay = 0.5};
         Brush fireBrush = {.particleType = fire, .amount = 16, .spread = 16};
         Brush waterBrush = {.particleType = water, .amount = 32, .spread = 32};
         Brush *currentBrush = &fireBrush;
 
+    StartMenu();
 	// game loop
 	while (!WindowShouldClose()) 
 	{
