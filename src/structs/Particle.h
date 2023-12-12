@@ -7,6 +7,6 @@ struct Particle
     Vector2 pos;
     Vector2 inertia;
     Color color;
-    float intensity;
+    float life;
     float size;
 };
