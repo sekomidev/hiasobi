@@ -1,5 +1,4 @@
 #include "raylib.h"
-#include "rand.h"
 #include <random>
 
 std::random_device rd;

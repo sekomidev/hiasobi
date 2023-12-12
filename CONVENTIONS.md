@@ -8,10 +8,10 @@ Variables | lowerCase | `int screenWidth = 0;`, `float targetFrameTime = 0.016f;
 Local variables | lowerCase | `Vector2 playerPosition = { 0 };`
 Global variables | lowerCase | `bool fullscreen = false;`
 Constants | lowerCase | `const int maxValue = 8;`
+Global constants | ALL_CAPS | `const int W_MAX_PARTICLES = 1000;`
 Pointers | MyType *pointer | `Texture2D *array = NULL;`
-float values | always x.xf | `float gravity = 10.0f`
-Operators | value1*value2 | `int product = value*6;`
-Operators | value1/value2 | `int division = value/4;`
+Operators | value1 * value2 | `int product = value*6;`
+Operators | value1 / value2 | `int division = value/4;`
 Operators | value1 + value2 | `int sum = value + 10;`
 Operators | value1 - value2 | `int res = value - 5;`
 Enum | TitleCase | `enum TextureFormat`
