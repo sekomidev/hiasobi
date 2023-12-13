@@ -10,7 +10,7 @@
 #include "structs/Brush.h"
 #include "structs/Particle.h"
 
-int A_TARGET_FPS = 60;
+int A_TARGET_FPS = 240;
 const int W_MAX_PARTICLES = 200'000;
 const int W_MAX_OUT_OF_BOUNDS_OFFSET = 1000;
 
@@ -58,7 +58,7 @@ void UpdateParticlePosition(Particle &p)
 
 void UpdateParticleState(Particle &p)
 {
-    p.life -= p.type->lifeDecay;
+    p.life -= p.type->lifeDecay * 60 * GetFrameTime();
     p.color.a = p.type->colorAlphaAdd + p.life * p.type->lifeAlphaMultiplier;
 
     auto inertDeltaX = RandDouble(p.type->minInertiaAdd.x, p.type->maxInertiaAdd.x);
@@ -89,7 +89,7 @@ void DrawParticles(const std::vector<Particle> &particles)
     }
 }
 
-void AddParticlesAtPos(std::vector<Particle> &particles, ParticleType *type, const Vector2 pos, const int amount,
+void AddParticles(std::vector<Particle> &particles, ParticleType *type, const Vector2 pos, const int amount,
                        const int spread)
 {
     for (int i = 0; i < amount; i++) {
@@ -99,10 +99,16 @@ void AddParticlesAtPos(std::vector<Particle> &particles, ParticleType *type, con
     }
 }
 
+void AddParticlesFpsLimited(std::vector<Particle> &particles, ParticleType *type, const Vector2 pos, const int amount,
+                       const int spread, const int defaultFps)
+{
+    AddParticles(particles, type, pos, amount * defaultFps * GetFrameTime(), spread);
+}
+
 void AddParticlesAtMousePos(std::vector<Particle> &particles, ParticleType *type, const int amount, const int spread)
 {
     Vector2 mousePos = GetMousePosition();
-    AddParticlesAtPos(particles, type, mousePos, amount, spread);
+    AddParticlesFpsLimited(particles, type, mousePos, amount, spread, 60);
 }
 
 void HandleKeyboardInput(std::vector<Particle> &particles, std::vector<Particle> &savedParticles, Brush &fireBrush,
@@ -162,9 +168,9 @@ void StartMenu()
 
         BeginDrawing();
         ClearBackground(BLACK);
-        AddParticlesAtPos(particles, &fire, {(float)GetScreenWidth() / 2 - 300, (float)GetScreenHeight() / 2 + 100}, 16,
+        AddParticles(particles, &fire, {(float)GetScreenWidth() / 2 - 300, (float)GetScreenHeight() / 2 + 100}, 16,
                           32);
-        AddParticlesAtPos(particles, &fire, {(float)GetScreenWidth() / 2 + 300, (float)GetScreenHeight() / 2 + 100}, 16,
+        AddParticles(particles, &fire, {(float)GetScreenWidth() / 2 + 300, (float)GetScreenHeight() / 2 + 100}, 16,
                           32);
         UpdateParticles(particles);
         DrawParticles(particles);
