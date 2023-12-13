@@ -10,7 +10,7 @@
 #include "structs/Brush.h"
 #include "structs/Particle.h"
 
-int A_TARGET_FPS = 240;
+int A_TARGET_FPS = 60;
 const int W_MAX_PARTICLES = 200'000;
 const int W_MAX_OUT_OF_BOUNDS_OFFSET = 1000;
 
@@ -36,8 +36,6 @@ ParticleType water{.minInertia = {-1, -4},
                    .size = 4,
                    .lifeDecay = 0.5};
 
-void ClearAllParticles(std::vector<Particle> &particles) { particles.clear(); }
-
 /* Clears particles that are out of screen view. */
 void ClearInvisibleParticles(std::vector<Particle> &particles)
 {
@@ -47,8 +45,7 @@ void ClearInvisibleParticles(std::vector<Particle> &particles)
                                               p.pos.y > GetScreenHeight() + W_MAX_OUT_OF_BOUNDS_OFFSET ||
                                               p.pos.x < -W_MAX_OUT_OF_BOUNDS_OFFSET ||
                                               p.pos.x > GetScreenWidth() + W_MAX_OUT_OF_BOUNDS_OFFSET || p.life < 0;
-                                   }),
-                    end(particles));
+                                   }), end(particles));
 }
 
 /*
@@ -57,8 +54,8 @@ void ClearInvisibleParticles(std::vector<Particle> &particles)
 */
 void UpdateParticlePosition(Particle &p)
 {
-    p.pos.x += (p.inertia.x + RandDouble(p.type->minRandMove.x, p.type->maxRandMove.x)) * GetFrameTime() * 100;
-    p.pos.y -= (p.inertia.y + RandDouble(p.type->minRandMove.y, p.type->maxRandMove.y)) * GetFrameTime() * 100;
+    p.pos.x += (p.inertia.x + RandDouble(p.type->minRandMove.x, p.type->maxRandMove.x)) * 100 * GetFrameTime();
+    p.pos.y -= (p.inertia.y + RandDouble(p.type->minRandMove.y, p.type->maxRandMove.y)) * 100 * GetFrameTime();
 }
 
 /* Updates the state of the particle, such as it's life, speed or inertia. */
@@ -67,12 +64,12 @@ void UpdateParticleState(Particle &p)
     p.life -= p.type->lifeDecay * 60 * GetFrameTime();
     p.color.a = p.type->colorAlphaAdd + p.life * p.type->lifeAlphaMultiplier;
 
-    auto inertDeltaX = RandDouble(p.type->minInertiaAdd.x, p.type->maxInertiaAdd.x);
+    auto inertDeltaX = RandDouble(p.type->minInertiaAdd.x, p.type->maxInertiaAdd.x) * 60 * GetFrameTime();
     if (p.inertia.x + inertDeltaX > p.type->minInertia.x && p.inertia.x + inertDeltaX < p.type->maxInertia.x) {
         p.inertia.x += inertDeltaX;
     }
 
-    auto inertDeltaY = RandDouble(p.type->minInertiaAdd.y, p.type->maxInertiaAdd.y);
+    auto inertDeltaY = RandDouble(p.type->minInertiaAdd.y, p.type->maxInertiaAdd.y) * 60 * GetFrameTime();
     if (p.inertia.y + inertDeltaY > p.type->minInertia.y && p.inertia.y + inertDeltaY < p.type->maxInertia.y) {
         p.inertia.y += inertDeltaY;
     }
@@ -138,7 +135,7 @@ void HandleKeyboardInput(std::vector<Particle> &particles, std::vector<Particle>
         currentBrush = &fireBrush;
         break;
     case KEY_Z:
-        ClearAllParticles(particles);
+        particles.clear();
         break;
     case KEY_C:
         currentBrush->particleType.color = RandColorRgb(0, 0, 0, 255, 255, 255);
