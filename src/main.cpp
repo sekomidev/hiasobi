@@ -118,12 +118,6 @@ void AddParticlesFpsLimited(std::vector<Particle> &particles, ParticleType *type
     AddParticles(particles, type, pos, amount * defaultFps * GetFrameTime(), spread);
 }
 
-void AddParticlesAtMousePos(std::vector<Particle> &particles, ParticleType *type, const int amount, const int spread)
-{
-    Vector2 mousePos = GetMousePosition();
-    AddParticlesFpsLimited(particles, type, mousePos, amount, spread);
-}
-
 /* Does things based on keys pressed. Not related to particle logic. */
 void HandleKeyboardInput(std::vector<Particle> &particles, std::vector<Particle> &savedParticles, Brush &fireBrush,
                          Brush &waterBrush, Brush *&currentBrush)
@@ -191,10 +185,8 @@ void StartMenu()
 
         BeginDrawing();
         ClearBackground(BLACK);
-        AddParticles(particles, &fire, {(float)GetScreenWidth() / 2 - 300, (float)GetScreenHeight() / 2 + 100}, 16,
-                          32);
-        AddParticles(particles, &fire, {(float)GetScreenWidth() / 2 + 300, (float)GetScreenHeight() / 2 + 100}, 16,
-                          32);
+        AddParticles(particles, &fire, {(float)GetScreenWidth() / 2 - 300, (float)GetScreenHeight() / 2 + 100}, 16, 32);
+        AddParticles(particles, &fire, {(float)GetScreenWidth() / 2 + 300, (float)GetScreenHeight() / 2 + 100}, 16, 32);
         UpdateParticles(particles);
         DrawParticles(particles);
         DrawText("hiasobi", GetScreenWidth() / 2 - 110, GetScreenHeight() / 2 - 180, 64, RED);
@@ -221,7 +213,8 @@ int main()
         HandleKeyboardInput(particles, savedParticles, fireBrush, waterBrush, currentBrush);
 
         if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsKeyPressed(KEY_X)) {
-            AddParticlesAtMousePos(particles, &currentBrush->particleType, currentBrush->amount, currentBrush->spread);
+            Vector2 mousePos = GetMousePosition();
+            AddParticlesFpsLimited(particles, &currentBrush->particleType, mousePos, currentBrush->amount, currentBrush->spread);
         }
 
         BeginDrawing();
