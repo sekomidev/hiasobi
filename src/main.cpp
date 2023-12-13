@@ -52,8 +52,8 @@ void ClearInvisibleParticles(std::vector<Particle> &particles)
 
 void UpdateParticlePosition(Particle &p)
 {
-    p.pos.x += (p.inertia.x + RandFloat(p.type->minRandMove.x, p.type->maxRandMove.x)) * GetFrameTime() * 100;
-    p.pos.y -= (p.inertia.y + RandFloat(p.type->minRandMove.y, p.type->maxRandMove.y)) * GetFrameTime() * 100;
+    p.pos.x += (p.inertia.x + RandDouble(p.type->minRandMove.x, p.type->maxRandMove.x)) * GetFrameTime() * 100;
+    p.pos.y -= (p.inertia.y + RandDouble(p.type->minRandMove.y, p.type->maxRandMove.y)) * GetFrameTime() * 100;
 }
 
 void UpdateParticleState(Particle &p)
@@ -61,12 +61,12 @@ void UpdateParticleState(Particle &p)
     p.life -= p.type->lifeDecay;
     p.color.a = p.type->colorAlphaAdd + p.life * p.type->lifeAlphaMultiplier;
 
-    auto inertDeltaX = RandFloat(p.type->minInertiaAdd.x, p.type->maxInertiaAdd.x);
+    auto inertDeltaX = RandDouble(p.type->minInertiaAdd.x, p.type->maxInertiaAdd.x);
     if (p.inertia.x + inertDeltaX > p.type->minInertia.x && p.inertia.x + inertDeltaX < p.type->maxInertia.x) {
         p.inertia.x += inertDeltaX;
     }
 
-    auto inertDeltaY = RandFloat(p.type->minInertiaAdd.y, p.type->maxInertiaAdd.y);
+    auto inertDeltaY = RandDouble(p.type->minInertiaAdd.y, p.type->maxInertiaAdd.y);
     if (p.inertia.y + inertDeltaY > p.type->minInertia.y && p.inertia.y + inertDeltaY < p.type->maxInertia.y) {
         p.inertia.y += inertDeltaY;
     }

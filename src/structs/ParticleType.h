@@ -12,10 +12,10 @@ struct ParticleType
     Vector2 maxRandMove;
     /* visual parameters */
     Color color;
-    float size;
-    float lifeDecay;
+    double size;
+    double lifeDecay;
     /* advanced parameters */
-    float lifeAlphaMultiplier = 2;
-    float startLife = 100;
-    float colorAlphaAdd = 50; 
+    double lifeAlphaMultiplier = 2;
+    double startLife = 100;
+    double colorAlphaAdd = 50; 
 };

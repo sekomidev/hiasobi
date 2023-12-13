@@ -10,9 +10,9 @@ int RandInt(int min, int max)
     return dist(mt);
 }
 
-float RandFloat(float min, float max)
+double RandDouble(double min, double max)
 {
-    std::uniform_real_distribution<float> dist(min, max);
+    std::uniform_real_distribution<double> dist(min, max);
     return dist(mt);
 }
 
