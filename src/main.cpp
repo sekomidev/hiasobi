@@ -177,7 +177,7 @@ void AppInit()
 // TODO: this function is a giant mess
 void StartMenu()
 {
-    while (!IsKeyPressed(KEY_ENTER)) {
+    while (!IsKeyPressed(KEY_ENTER) && !IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         if (WindowShouldClose()) {
             CloseWindow();
             exit(0);
