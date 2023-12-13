@@ -38,6 +38,7 @@ ParticleType water{.minInertia = {-1, -4},
 
 void ClearAllParticles(std::vector<Particle> &particles) { particles.clear(); }
 
+/* Clears particles that are out of screen view. */
 void ClearInvisibleParticles(std::vector<Particle> &particles)
 {
     particles.erase(std::remove_if(begin(particles), end(particles),
@@ -50,12 +51,17 @@ void ClearInvisibleParticles(std::vector<Particle> &particles)
                     end(particles));
 }
 
+/*
+    Updates only the physical position of the particle.
+    Does not modify particle inertia or speed.
+*/
 void UpdateParticlePosition(Particle &p)
 {
     p.pos.x += (p.inertia.x + RandDouble(p.type->minRandMove.x, p.type->maxRandMove.x)) * GetFrameTime() * 100;
     p.pos.y -= (p.inertia.y + RandDouble(p.type->minRandMove.y, p.type->maxRandMove.y)) * GetFrameTime() * 100;
 }
 
+/* Updates the state of the particle, such as it's life, speed or inertia. */
 void UpdateParticleState(Particle &p)
 {
     p.life -= p.type->lifeDecay * 60 * GetFrameTime();
@@ -74,6 +80,8 @@ void UpdateParticleState(Particle &p)
     UpdateParticlePosition(p);
 }
 
+/* This function contains the high-level logic of updating all particles. */
+/* Should be called in the game loop.*/
 void UpdateParticles(std::vector<Particle> &particles)
 {
     ClearInvisibleParticles(particles);
@@ -89,6 +97,7 @@ void DrawParticles(const std::vector<Particle> &particles)
     }
 }
 
+/* Always emits the same amount of particles per frame. */
 void AddParticles(std::vector<Particle> &particles, ParticleType *type, const Vector2 pos, const int amount,
                        const int spread)
 {
@@ -99,8 +108,14 @@ void AddParticles(std::vector<Particle> &particles, ParticleType *type, const Ve
     }
 }
 
+/* 
+    Always emits the same amount of particles per second, regardless of framerate. 
+
+    If the actual framerate is equal to defaultFps, then emits the same amount
+    of particles per frame as the AddParticles function would.
+*/
 void AddParticlesFpsLimited(std::vector<Particle> &particles, ParticleType *type, const Vector2 pos, const int amount,
-                       const int spread, const int defaultFps)
+                       const int spread, const int defaultFps = 60)
 {
     AddParticles(particles, type, pos, amount * defaultFps * GetFrameTime(), spread);
 }
@@ -108,9 +123,10 @@ void AddParticlesFpsLimited(std::vector<Particle> &particles, ParticleType *type
 void AddParticlesAtMousePos(std::vector<Particle> &particles, ParticleType *type, const int amount, const int spread)
 {
     Vector2 mousePos = GetMousePosition();
-    AddParticlesFpsLimited(particles, type, mousePos, amount, spread, 60);
+    AddParticlesFpsLimited(particles, type, mousePos, amount, spread);
 }
 
+/* Does things based on keys pressed. Not related to particle logic. */
 void HandleKeyboardInput(std::vector<Particle> &particles, std::vector<Particle> &savedParticles, Brush &fireBrush,
                          Brush &waterBrush, Brush *&currentBrush)
 {
