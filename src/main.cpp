@@ -160,6 +160,7 @@ void StartMenu()
         DrawText("press enter to play", GetScreenWidth() / 2 - 140, GetScreenHeight() / 2 + 100, 28, GRAY);
         EndDrawing();
     }
+    particles.clear();
 }
 
 int main()
