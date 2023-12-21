@@ -1,7 +1,6 @@
 #include <algorithm>
-#include <cstdint>
 #include <cstdlib>
-#include <iostream>
+#include <string>
 #include <vector>
 
 #include "rand-utils.h"
@@ -24,7 +23,6 @@ ParticleType fire{.minInertia = {-1.2, -1},
                   .color = RED,
                   .size = 4,
                   .lifeDecay = 1.8};
-
 ParticleType water{.minInertia = {-1, -4},
                    .maxInertia = {1, 0},
                    .minInertiaAdd = {-0.5, -2},
@@ -44,7 +42,8 @@ void ClearInvisibleParticles(std::vector<Particle> &particles)
                                               p.pos.y > GetScreenHeight() + W_MAX_OUT_OF_BOUNDS_OFFSET ||
                                               p.pos.x < -W_MAX_OUT_OF_BOUNDS_OFFSET ||
                                               p.pos.x > GetScreenWidth() + W_MAX_OUT_OF_BOUNDS_OFFSET || p.life < 0;
-                                   }), end(particles));
+                                   }),
+                    end(particles));
 }
 
 /*
@@ -96,8 +95,8 @@ void DrawParticles(const std::vector<Particle> &particles)
 }
 
 /* Always emits the same amount of particles per frame. */
-void AddParticles(std::vector<Particle> &particles, ParticleType *type, const Vector2 pos, const int amount,
-                       const int spread)
+void AddParticles(std::vector<Particle> &particles, const Vector2 pos, ParticleType *type, const int amount,
+                  const int spread)
 {
     for (int i = 0; i < amount; i++) {
         Vector2 randOffset = RandPointInCircle(spread);
@@ -106,16 +105,26 @@ void AddParticles(std::vector<Particle> &particles, ParticleType *type, const Ve
     }
 }
 
-/* 
-    Always emits the same amount of particles per second, regardless of framerate. 
+void AddParticles(std::vector<Particle> &particles, const Vector2 pos, Brush &brush)
+{
+    AddParticles(particles, pos, &brush.particleType, brush.amount, brush.spread);
+}
+
+/*
+    Always emits the same amount of particles per second, regardless of framerate.
 
     If the actual framerate is equal to defaultFps, then emits the same amount
     of particles per frame as the AddParticles function would.
 */
-void AddParticlesFpsLimited(std::vector<Particle> &particles, ParticleType *type, const Vector2 pos, const int amount,
-                       const int spread, const int defaultFps = 60)
+void AddParticlesFpsLimited(std::vector<Particle> &particles, Vector2 pos, ParticleType *type, int amount,
+                            int spread, int defaultFps = 60)
 {
-    AddParticles(particles, type, pos, amount * defaultFps * GetFrameTime(), spread);
+    AddParticles(particles, pos, type, amount * defaultFps * GetFrameTime(), spread);
+}
+
+void AddParticlesFpsLimited(std::vector<Particle> &particles, Vector2 pos, Brush &brush, int defaultFps = 60)
+{
+    AddParticlesFpsLimited(particles, pos, &brush.particleType, brush.amount, brush.spread, defaultFps);
 }
 
 /* Does things based on keys pressed. Not related to particle logic. */
@@ -177,6 +186,7 @@ void AppInit()
 // TODO: this function is a giant mess
 void StartMenu()
 {
+    Brush fireMenuBrush = {fire, 16, 32};
     while (!IsKeyPressed(KEY_ENTER) && !IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         if (WindowShouldClose()) {
             CloseWindow();
@@ -185,8 +195,8 @@ void StartMenu()
 
         BeginDrawing();
         ClearBackground(BLACK);
-        AddParticles(particles, &fire, {(float)GetScreenWidth() / 2 - 300, (float)GetScreenHeight() / 2 + 100}, 16, 32);
-        AddParticles(particles, &fire, {(float)GetScreenWidth() / 2 + 300, (float)GetScreenHeight() / 2 + 100}, 16, 32);
+        AddParticles(particles, {(float)GetScreenWidth() / 2 - 300, (float)GetScreenHeight() / 2 + 100}, fireMenuBrush);
+        AddParticles(particles, {(float)GetScreenWidth() / 2 + 300, (float)GetScreenHeight() / 2 + 100}, fireMenuBrush);
         UpdateParticles(particles);
         DrawParticles(particles);
         DrawText("hiasobi", GetScreenWidth() / 2 - 110, GetScreenHeight() / 2 - 180, 64, RED);
@@ -214,7 +224,7 @@ int main()
 
         if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsKeyPressed(KEY_X)) {
             Vector2 mousePos = GetMousePosition();
-            AddParticlesFpsLimited(particles, &currentBrush->particleType, mousePos, currentBrush->amount, currentBrush->spread);
+            AddParticlesFpsLimited(particles, mousePos, *currentBrush);
         }
 
         BeginDrawing();
