@@ -2,8 +2,8 @@
 #include <string>
 #include <vector>
 
-#include "rand-utils.h"
 #include "particle-logic.h"
+#include "rand-utils.h"
 #include "raylib.h"
 #include "structs/Brush.h"
 #include "structs/Particle.h"
@@ -66,20 +66,29 @@ void AddParticles(std::vector<Particle> &particles, const Vector2 pos, Brush &br
 }
 
 /*
-    Always emits the same amount of particles per second, regardless of framerate.
+    Always (not really) emits the same amount of particles per second, regardless of framerate.
 
-    If the actual framerate is equal to defaultFps, then emits the same amount
-    of particles per frame as the AddParticles function would.
+
 */
-void AddParticlesFpsLimited(std::vector<Particle> &particles, Vector2 pos, ParticleType *type, int amount,
-                            int spread, int defaultFps = 60)
+void AddParticlesPerSecond(std::vector<Particle> &particles, Vector2 pos, ParticleType *type, int amountPerSecond,
+                            int spread)
 {
-    AddParticles(particles, pos, type, amount * defaultFps * GetFrameTime(), spread);
+    static double time, ptQuota;
+    //std::cout << time << "\n";
+    double ft = GetFrameTime();
+    if (time <= 0) {
+        time = 0.2;
+        ptQuota = amountPerSecond / 5;
+    }
+    int amount = ((ptQuota / time) * ft);
+    AddParticles(particles, pos, type, amount, spread);
+    ptQuota -= amount;
+    time -= ft;
 }
 
-void AddParticlesFpsLimited(std::vector<Particle> &particles, Vector2 pos, Brush &brush, int defaultFps = 60)
+void AddParticlesPerSecond(std::vector<Particle> &particles, Vector2 pos, Brush &brush, int amountPerSecond)
 {
-    AddParticlesFpsLimited(particles, pos, &brush.particleType, brush.amount, brush.spread, defaultFps);
+    AddParticlesPerSecond(particles, pos, &brush.particleType, brush.amount, brush.spread);
 }
 
 /* Does things based on keys pressed. Not related to particle logic. */
@@ -141,7 +150,7 @@ void AppInit()
 // TODO: this function is a giant mess
 void StartMenu()
 {
-    Brush *fireMenuBrush = new Brush {fire, 16, 32};
+    Brush *fireMenuBrush = new Brush{fire, 16, 32};
     while (!IsKeyPressed(KEY_ENTER) && !IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         if (WindowShouldClose()) {
             CloseWindow();
@@ -179,7 +188,7 @@ int main()
 
         if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsKeyPressed(KEY_X)) {
             Vector2 mousePos = GetMousePosition();
-            AddParticlesFpsLimited(particles, mousePos, *currentBrush);
+            AddParticlesPerSecond(particles, mousePos, &currentBrush->particleType, currentBrush->amount * 60, currentBrush->spread);
         }
 
         BeginDrawing();

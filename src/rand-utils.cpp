@@ -18,7 +18,7 @@ double RandDouble(double min, double max)
 
 Vector2 RandPointInCircle(float r)
 {
-    int a = random(), b = random();
+    int a = rand(), b = rand();
     if (b < a) 
     {    
         std::swap(a, b);
