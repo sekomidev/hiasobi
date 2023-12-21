@@ -141,7 +141,7 @@ void AppInit()
 // TODO: this function is a giant mess
 void StartMenu()
 {
-    Brush fireMenuBrush = {fire, 16, 32};
+    Brush *fireMenuBrush = new Brush {fire, 16, 32};
     while (!IsKeyPressed(KEY_ENTER) && !IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         if (WindowShouldClose()) {
             CloseWindow();
@@ -150,8 +150,8 @@ void StartMenu()
 
         BeginDrawing();
         ClearBackground(BLACK);
-        AddParticles(particles, {(float)GetScreenWidth() / 2 - 300, (float)GetScreenHeight() / 2 + 100}, fireMenuBrush);
-        AddParticles(particles, {(float)GetScreenWidth() / 2 + 300, (float)GetScreenHeight() / 2 + 100}, fireMenuBrush);
+        AddParticles(particles, {(float)GetScreenWidth() / 2 - 300, (float)GetScreenHeight() / 2 + 100}, *fireMenuBrush);
+        AddParticles(particles, {(float)GetScreenWidth() / 2 + 300, (float)GetScreenHeight() / 2 + 100}, *fireMenuBrush);
         UpdateParticles(particles);
         DrawParticles(particles);
         DrawText("hiasobi", GetScreenWidth() / 2 - 110, GetScreenHeight() / 2 - 180, 64, RED);
@@ -160,7 +160,6 @@ void StartMenu()
         DrawText("press enter to play", GetScreenWidth() / 2 - 140, GetScreenHeight() / 2 + 100, 28, GRAY);
         EndDrawing();
     }
-    particles.clear();
 }
 
 int main()
