@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include <cstdint>
 #include <random>
 
 std::random_device rd;
@@ -18,7 +19,8 @@ double RandDouble(double min, double max)
 
 Vector2 RandPointInCircle(float r)
 {
-    int a = rand(), b = rand();
+    std::uniform_int_distribution<int> dist(0, INT32_MAX);
+    int a = dist(mt), b = dist(mt);
     if (b < a) 
     {    
         std::swap(a, b);
