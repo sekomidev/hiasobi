@@ -13,3 +13,6 @@
 - Generate a makefile: `premake5 gmake2`
 - Build the application: `make config=release_x64 -j 4`
 - Run it with `_bin/Release/hiasobi`
+
+## Windows
+fuck if i know
