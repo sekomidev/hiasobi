@@ -176,7 +176,7 @@ int main()
     AppInit();
     std::vector<Particle> savedParticles;
     Brush fireBrush = {.particleType = fire, .amount = 16, .spread = 16};
-    Brush waterBrush = {.particleType = water, .amount = 32, .spread = 32};
+    Brush waterBrush = {.particleType = water, .amount = 28, .spread = 32};
     Brush *currentBrush = &fireBrush;
 
     StartMenu();

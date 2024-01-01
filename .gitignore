@@ -9,3 +9,4 @@ premake5
 premake5.*
 premake-*
 !premake5.lua
+!raylib_premake5.lua
