@@ -78,7 +78,7 @@ void AddParticlesPerSecond(std::vector<Particle> &particles, Vector2 pos, Partic
     double ft = GetFrameTime();
     if (time <= 0) {
         time = 0.2;
-        ptQuota = amountPerSecond / 5;
+        ptQuota = static_cast<int>(amountPerSecond / 5);
     }
     int amount = ((ptQuota / time) * ft);
     AddParticles(particles, pos, type, amount, spread);
