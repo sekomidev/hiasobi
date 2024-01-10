@@ -92,7 +92,7 @@ void AddParticlesPerSecond(std::vector<Particle> &particles, Vector2 pos, Brush 
 }
 
 /* Does things based on keys pressed. Not related to particle logic. */
-void HandleKeyboardInput(std::vector<Particle> &particles, std::vector<Particle> &savedParticles, Brush &fireBrush,
+void HandleKeyboardInput(std::vector<Particle> &particles, Brush &fireBrush,
                          Brush &waterBrush, Brush *&currentBrush)
 {
     switch (GetKeyPressed()) {
@@ -116,12 +116,6 @@ void HandleKeyboardInput(std::vector<Particle> &particles, std::vector<Particle>
         break;
     case KEY_C:
         currentBrush->particleType.color = RandColorRgb(0, 0, 0, 255, 255, 255);
-        break;
-    case KEY_S:
-        savedParticles = particles;
-        break;
-    case KEY_L:
-        particles = savedParticles;
         break;
     case KEY_MINUS:
         currentBrush->particleType.size -= 1;
@@ -174,7 +168,6 @@ void StartMenu()
 int main()
 {
     AppInit();
-    std::vector<Particle> savedParticles;
     Brush fireBrush = {.particleType = fire, .amount = 16, .spread = 16};
     Brush waterBrush = {.particleType = water, .amount = 28, .spread = 32};
     Brush *currentBrush = &fireBrush;
@@ -184,7 +177,7 @@ int main()
     // game loop
     while (!WindowShouldClose()) {
         UpdateParticles(particles);
-        HandleKeyboardInput(particles, savedParticles, fireBrush, waterBrush, currentBrush);
+        HandleKeyboardInput(particles, fireBrush, waterBrush, currentBrush);
 
         if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsKeyPressed(KEY_X)) {
             Vector2 mousePos = GetMousePosition();
