@@ -162,7 +162,8 @@ void StartMenu()
         UpdateParticles(particles);
         DrawParticles(particles);
         DrawText("hiasobi", GetScreenWidth() / 2 - 110, GetScreenHeight() / 2 - 180, 64, RED);
-        DrawText(" it took me like 5 minutes\n\nto come up with the name", GetScreenWidth() / 2 - 150,
+        const char *texts[] = {"why are you here?", "go listen to masshiro na yuki"};
+        DrawText(texts[RandInt(0, 1)], GetScreenWidth() / 2 - 150,
                  GetScreenHeight() / 2 - 100, 24, RED);
         DrawText("press enter to play", GetScreenWidth() / 2 - 140, GetScreenHeight() / 2 + 100, 28, GRAY);
         EndDrawing();
@@ -173,6 +174,7 @@ int main()
 {
     AppInit();
     rei::ScreenTexture2D screen(1280, 800);
+    SetTextureFilter(screen.render.texture, 100);
     Brush fireBrush = {.particleType = fire, .amount = 16, .spread = 16};
     Brush waterBrush = {.particleType = water, .amount = 28, .spread = 32};
     Brush *currentBrush = &fireBrush;
