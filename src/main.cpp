@@ -5,8 +5,11 @@
 #include "particle-logic.h"
 #include "rand-utils.h"
 #include "raylib.h"
+#include "libs/rei.h"
 #include "structs/Brush.h"
 #include "structs/Particle.h"
+
+using namespace rei;
 
 int A_TARGET_FPS = 60;
 const int W_MAX_PARTICLES = 200'000;
