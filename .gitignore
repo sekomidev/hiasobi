@@ -2,6 +2,7 @@ raylib-master
 sandbox
 _build
 _bin
+_lib
 .vs
 .vscode
 
