@@ -171,6 +171,7 @@ void StartMenu()
 int main()
 {
     AppInit();
+    rei::ScreenTexture2D screen(1280, 800);
     Brush fireBrush = {.particleType = fire, .amount = 16, .spread = 16};
     Brush waterBrush = {.particleType = water, .amount = 28, .spread = 32};
     Brush *currentBrush = &fireBrush;
@@ -183,14 +184,19 @@ int main()
         HandleKeyboardInput(particles, fireBrush, waterBrush, currentBrush);
 
         if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsKeyPressed(KEY_X)) {
-            Vector2 mousePos = GetMousePosition();
+            Vector2 mousePos = screen.virtualMousePos();
             AddParticlesPerSecond(particles, mousePos, &currentBrush->particleType, currentBrush->amount * 60, currentBrush->spread);
         }
 
-        BeginDrawing();
+        BeginTextureMode(screen.render);
         ClearBackground(BLACK);
         DrawParticles(particles);
         DrawDebugInfo(particles);
+        EndTextureMode();
+
+        BeginDrawing();
+        ClearBackground(BLACK);
+        screen.draw();
         EndDrawing();
     }
 
