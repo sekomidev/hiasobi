@@ -139,6 +139,7 @@ void AppInit()
 {
     InitWindow(1280, 800, "hiasobi (camellia reference!!!)");
     SetWindowState(FLAG_WINDOW_RESIZABLE);
+    SetWindowMinSize(640, 400);
     SetTargetFPS(A_TARGET_FPS);
     SetTraceLogLevel(LOG_DEBUG);
     SetExitKey(KEY_ESCAPE);
