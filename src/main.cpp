@@ -162,8 +162,8 @@ void StartMenu()
         UpdateParticles(particles);
         DrawParticles(particles);
         DrawText("hiasobi", GetScreenWidth() / 2 - 110, GetScreenHeight() / 2 - 180, 64, RED);
-        const char *texts[] = {"why are you here?", "go listen to masshiro na yuki"};
-        DrawText(texts[RandInt(0, 1)], GetScreenWidth() / 2 - 150,
+        const char *texts[] = {"why are you playing this game?", "go listen to masshiro na yuki"};
+        DrawText(texts[RandInt(0, 1)], GetScreenWidth() / 2 - 180,
                  GetScreenHeight() / 2 - 100, 24, RED);
         DrawText("press enter to play", GetScreenWidth() / 2 - 140, GetScreenHeight() / 2 + 100, 28, GRAY);
         EndDrawing();
