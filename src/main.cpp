@@ -174,7 +174,11 @@ int main()
 {
     AppInit();
     rei::ScreenTexture2D screen(1280, 800);
-    SetTextureFilter(screen.render.texture, 100);
+    SetTextureFilter(screen.render.texture, TEXTURE_FILTER_POINT);
+    gui::Slider lifeDecaySlider({20, 50}, LoadTexture("resources/img/gui/slider.png"), LoadTexture("resources/img/gui/sliderhead.png"), 4);
+    lifeDecaySlider.value = 0.6;
+    std::vector<gui::GuiElement> gui;
+    gui.push_back(lifeDecaySlider);
     Brush fireBrush = {.particleType = fire, .amount = 16, .spread = 16};
     Brush waterBrush = {.particleType = water, .amount = 28, .spread = 32};
     Brush *currentBrush = &fireBrush;
@@ -184,17 +188,24 @@ int main()
     // game loop
     while (!WindowShouldClose()) {
         UpdateParticles(particles);
+        currentBrush->particleType.lifeDecay = lifeDecaySlider.value * 3;
+        lifeDecaySlider.update(screen.virtualMousePos());
         HandleKeyboardInput(particles, fireBrush, waterBrush, currentBrush);
 
         if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsKeyPressed(KEY_X)) {
             Vector2 mousePos = screen.virtualMousePos();
-            AddParticlesPerSecond(particles, mousePos, &currentBrush->particleType, currentBrush->amount * 60, currentBrush->spread);
+            if (!lifeDecaySlider.isDown(mousePos)) {
+                AddParticlesPerSecond(particles, mousePos, &currentBrush->particleType, currentBrush->amount * 60, currentBrush->spread);
+            }
         }
 
         BeginTextureMode(screen.render);
         ClearBackground(BLACK);
         DrawParticles(particles);
         DrawDebugInfo(particles);
+        DrawText(TextFormat("life decay: %f", currentBrush->particleType.lifeDecay), 24, 20, 20, WHITE);
+
+        lifeDecaySlider.draw();
         EndTextureMode();
 
         BeginDrawing();
