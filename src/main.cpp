@@ -25,6 +25,7 @@ ParticleType fire{.minInertia = {-1.2, -1},
                   .color = RED,
                   .size = 4,
                   .lifeDecay = 1.8};
+
 ParticleType water{.minInertia = {-1, -4},
                    .maxInertia = {1, 0},
                    .minInertiaAdd = {-0.5, -2},
@@ -162,8 +163,7 @@ void StartMenu()
         UpdateParticles(particles);
         DrawParticles(particles);
         DrawText("hiasobi", GetScreenWidth() / 2 - 110, GetScreenHeight() / 2 - 180, 64, RED);
-        const char *texts[] = {"why are you playing this game?", "go listen to masshiro na yuki"};
-        DrawText(texts[RandInt(0, 1)], GetScreenWidth() / 2 - 180,
+        DrawText("go listen to masshiro na yuki", GetScreenWidth() / 2 - 180,
                  GetScreenHeight() / 2 - 100, 24, RED);
         DrawText("press enter to play", GetScreenWidth() / 2 - 140, GetScreenHeight() / 2 + 100, 28, GRAY);
         EndDrawing();
@@ -177,8 +177,7 @@ int main()
     SetTextureFilter(screen.render.texture, TEXTURE_FILTER_POINT);
     gui::Slider lifeDecaySlider({20, 50}, LoadTexture("resources/img/gui/slider.png"), LoadTexture("resources/img/gui/sliderhead.png"), 4);
     lifeDecaySlider.value = 0.6;
-    std::vector<gui::GuiElement> gui;
-    gui.push_back(lifeDecaySlider);
+    
     Brush fireBrush = {.particleType = fire, .amount = 16, .spread = 16};
     Brush waterBrush = {.particleType = water, .amount = 28, .spread = 32};
     Brush *currentBrush = &fireBrush;
